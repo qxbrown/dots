@@ -1,0 +1,166 @@
+* {
+     border: none;
+     border-radius: 0;
+     font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", sans-serif;
+     font-size: 13px;
+     min-height: 0;
+}
+
+window#waybar {
+     background: transparent;
+     color: #aa80ff;
+}
+
+tooltip {
+     background: transparent;
+     border: none;
+     color: transparent;
+}
+
+window#waybar > box > box > widget > *,
+window#waybar > box > box > box {
+     margin: 0 6px;
+     border-radius: 8px;
+     background-color: rgba(28, 31, 61, 0.8);
+}
+
+
+#custom-arch,
+#custom-clock_custom,
+#pulseaudio,
+#backlight,
+#battery,
+#network,
+#bluetooth,
+#temperature,
+#workspaces,
+#tray {
+     padding: 4px 8px;
+     background-color: rgb(23, 26, 54);
+}
+/* Arch */
+#custom-arch {
+     padding: 0 16px;
+     color: #ff33bb;
+}
+
+/* Clock */
+#custom-clock_custom {
+     color: #80bfff;
+     font-weight: 500;
+     padding-right: 10px;
+}
+
+/* Workspace */
+
+#workspaces button {
+     color: #aa80ff;
+     border-radius: 6px;
+     transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+#workspaces button:hover {
+     color: #f53df5;
+}
+
+#workspaces button.active {
+     color: #f53df5;
+}
+
+#workspaces button.urgent {
+     color: #ff0080;
+}
+
+/* --- Music --- */
+#mpris {
+     color: #d4c9c4;
+     padding: 4px 12px;
+     background-color: rgb(23, 26, 54);
+     border-radius: 10px;
+     font-size: 11px;
+}
+
+/* Audio Group */
+#audio {
+     padding: 4px 8px;
+     background-color: rgb(23, 26, 54);
+     font-weight: 500;
+}
+
+#pulseaudio:not(.mic) {
+     color: #ff9966;
+}
+
+#pulseaudio.muted:not(.mic) {
+     color: #d4c9c4;
+}
+
+#pulseaudio.mic {
+     color: #f5d63d;
+}
+
+#pulseaudio.mic.source-muted {
+     color: #d4c9c4;
+}
+
+#pulseaudio.mic:not(.source-muted) {
+     color: #f5d63d;
+}
+
+#pulseaudio:not(.mic):not(.muted) {
+     color: #ff9966;
+}
+
+/* Backlight */
+#backlight {
+     color: #33ccff;
+}
+
+/* Battery */
+#battery.charging,
+#battery.plugged {
+     color: #33ff99;
+}
+
+#battery {
+     color: #9ece6a;
+}
+
+#battery.critical:not(.charging) {
+     color: #ff0080;
+     animation-name: blink;
+     animation-duration: 0.5s;
+     animation-timing-function: linear;
+     animation-iteration-count: infinite;
+     animation-direction: alternate;
+}
+
+/* Blink keyframes */
+@keyframes blink {
+     0% {
+          opacity: 1;
+     }
+     100% {
+          opacity: 0.2;
+     }
+}
+
+#temperature {
+     color: #f5d63d;
+}
+
+#temperature.critical {
+     color: #f53d40;
+}
+
+/* Network & Bluetooth */
+#network,
+#bluetooth {
+     color: #deb887;
+}
+
+#network.disconnected {
+     color: #d4c9c4;
+}
+
+/* 7dcfff */

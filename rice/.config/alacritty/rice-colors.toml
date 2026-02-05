@@ -1,0 +1,29 @@
+# Rice theme — same palette as waybar/style.css (see config/_theme/theme.conf)
+
+[colors.primary]
+background = "#171a36"
+foreground = "#aa80ff"
+
+[colors.cursor]
+cursor = "#aa80ff"
+text = "#171a36"
+
+[colors.normal]
+black = "#171a36"
+blue = "#80bfff"
+cyan = "#33ccff"
+green = "#9ece6a"
+magenta = "#f53df5"
+red = "#f53d40"
+white = "#d4c9c4"
+yellow = "#f5d63d"
+
+[colors.bright]
+black = "#1c1f3d"
+blue = "#80bfff"
+cyan = "#33ccff"
+green = "#33ff99"
+magenta = "#ff33bb"
+red = "#ff0080"
+white = "#aa80ff"
+yellow = "#f5d63d"

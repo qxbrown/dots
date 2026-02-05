@@ -1,0 +1,60 @@
+/* Rice wofi — same palette as waybar/style.css (see config/_theme/theme.conf) */
+
+* {
+  font-family: "JetBrainsMono Nerd Font";
+}
+
+window {
+  margin: 5px;
+  backdrop-filter: blur(10px);
+  border: none;
+  font-family: JetBrains Mono;
+}
+
+#input {
+  all: unset;
+  min-height: 40px;
+  border: none;
+  color: #9ece6a;
+  font-size: 16px;
+  background-color: rgba(28, 31, 61, 0.8);
+  outline: none;
+}
+
+#inner-box {
+  margin: 4px;
+  padding: 10px;
+  font-weight: normal;
+}
+
+#outer-box {
+  margin: 0px;
+  padding: 10px;
+  border: none;
+  background-color: transparent;
+}
+
+#scroll {
+  margin-top: 4px;
+  border: none;
+  border-radius: 15px;
+  background-color: transparent;
+}
+
+#text:selected {
+  color: #aa80ff;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#entry {
+  margin: 0px;
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+}
+
+#entry:selected {
+  margin: 0px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+}

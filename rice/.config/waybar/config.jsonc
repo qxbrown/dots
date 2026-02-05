@@ -1,0 +1,39 @@
+[
+     // --- Monitor 1: HDMI/DP ---
+     {
+          "output": ["HDMI-A-1", "DP-1"],
+          "position": "top",
+          "modules-left": ["custom/clock_custom", "hyprland/workspaces"],
+          "modules-right": ["mpris", "group/audio", "group/system"],
+          "group/system": {
+               "orientation": "inherit",
+               "modules": ["tray", "temperature", "network", "bluetooth"]
+          },
+          "include": ["~/.config/waybar/default-modules.jsonc"]
+     },
+
+     // --- Monitor 2: Laptop (eDP-1) ---
+     {
+          "output": ["eDP-1"],
+          "position": "top",
+          "persist": true,
+          "modules-left": [
+               "custom/arch",
+               "custom/clock_custom",
+               "hyprland/workspaces"
+          ],
+          "modules-right": ["mpris", "group/audio", "group/system"],
+          "group/system": {
+               "orientation": "inherit",
+               "modules": [
+                    "group/light",
+                    "tray",
+                    "battery",
+                    "network",
+                    "bluetooth"
+                    // "temperature"
+               ]
+          },
+          "include": ["~/.config/waybar/default-modules.jsonc"]
+     }
+]

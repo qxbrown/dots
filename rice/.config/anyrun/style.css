@@ -1,0 +1,49 @@
+/* Rice anyrun — colors match config/_theme/theme.conf (waybar palette) */
+* {
+  font-family: "JetBrainsMono Nerd Font";
+}
+
+window {
+  background-color: transparent;
+  border-radius: 20px;
+}
+
+#main {
+  background: transparent;
+}
+
+#main entry {
+  padding: 10px;
+  background-color: #171a36;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+#main list {
+  background: transparent;
+}
+
+#main list > #plugin,
+#main list > #plugin:hover {
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  background-color: #1c1f3d;
+  border-radius: 5px;
+  margin-top: 5px;
+  border: 1px solid #45475a;
+}
+
+#main list > #plugin list {
+  padding: 10px;
+}
+
+list > #match {
+  margin: 4px 0px;
+  padding: 4px;
+  border-radius: 5px;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
+list > #match:selected {
+  background-color: #45475a;
+  border: 1px solid #aa80ff;
+}

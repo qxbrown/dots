@@ -1,0 +1,32 @@
+# Rice — same colors as waybar/style.css (see config/_theme/theme.conf)
+[global]
+font = JetBrains Mono Nerd Font
+allow_markup = yes
+origin = top-right
+corner_radius = 0
+offset = 6x6
+width = (300, 580)
+frame_width = 1
+frame_color = "#f53df5"
+separator_color = frame
+alignment = center
+notification_limit = 6
+indicate_hidden = yes
+gap_size = 5
+mouse_left_click = close_current
+mouse_middle_click = do_action, close_current
+mouse_right_click = close_all
+fullscreen_show_everything
+
+[urgency_low]
+background = "#171a36"
+foreground = "#aa80ff"
+
+[urgency_normal]
+background = "#171a36"
+foreground = "#aa80ff"
+
+[urgency_critical]
+background = "#171a36"
+foreground = "#ff0080"
+frame_color = "#f53d40"
