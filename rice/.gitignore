@@ -1,0 +1,4 @@
+# Ignore the old full .config copy if present
+.config/
+*.log
+.DS_Store

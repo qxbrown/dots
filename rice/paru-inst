@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+# Install paru from AUR (paru-bin). Run as user; uses mktemp then cleans up.
+set -e
+sudo pacman -S --needed --noconfirm base-devel git
+TMPDIR=$(mktemp -d)
+git clone https://aur.archlinux.org/paru-bin.git "$TMPDIR/paru-bin"
+cd "$TMPDIR/paru-bin"
+makepkg -si --noconfirm
+cd - >/dev/null
+rm -rf "$TMPDIR"
+echo "Paru installed."
