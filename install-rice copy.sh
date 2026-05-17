@@ -17,7 +17,6 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
-
 # --- Paru ---
 install_paru() {
     sudo pacman -S --needed --noconfirm base-devel git
@@ -98,9 +97,11 @@ done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
+xdg-user-dirs-update
+
 # --- AUR packages ---
 AUR_PACKAGES=( 
-    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip urlview
+    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip 
      anyrun-git anyrun-provider-git wlogout 
 )
 
@@ -125,11 +126,7 @@ if [[ -d "$RICE_DIR/tmux" ]]; then
 
     # tmux helper folder
     mkdir -p "$HOME/tmux"
-
-    cp -rf "$RICE_DIR/tmux/." "$HOME/tmux/"
-
-    # remove duplicate .tmux.conf from ~/tmux
-    rm -f "$HOME/tmux/.tmux.conf"
+    rsync -a --exclude='.tmux.conf' "$RICE_DIR/tmux/" "$HOME/tmux/"
 
     chmod +x "$HOME/tmux"/*.sh 2>/dev/null || true
 
@@ -155,8 +152,7 @@ fi
 chmod +x "$CONFIG/hypr/scripts"/{linkhandler,lookup.sh,tmuxsession,tmuxcht.sh} 2>/dev/null || true
 
 # --- Directories ---
-xdg-user-dirs-update
-mkdir -p "$HOME/Pictures/Screenshot"
+mkdir -p "$CONFIG/hypr/img" "$HOME/Pictures/Screenshot" "$HOME/startpage"
 
 # --- Default shell to zsh ---
 if ! grep -q "$(whence -p zsh)" /etc/shells 2>/dev/null; then
@@ -165,6 +161,12 @@ fi
 echo -e "${GREEN}Setting default shell to zsh...${RESET}"
 chsh -s "$(whence -p zsh)" || echo -e "${BLUE}Could not change shell. Run: chsh -s \$(which zsh)${RESET}"
 
+# --- Wallpaper ---
+if [[ -f "$CONFIG/hypr/img/mario.jpg" ]]; then
+    echo "  mario.jpg found (desktop + lock screen)"
+else
+    echo "  Add mario.jpg to $CONFIG/hypr/img/"
+fi
 
 echo ""
 echo -e "${GREEN}=========================================="
