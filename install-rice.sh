@@ -21,17 +21,47 @@ echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
 
 # --- Paru ---
 if command -v paru &>/dev/null; then
-    echo -e "${GREEN}Paru detected, moving on...${RESET}"
+    echo -e "${GREEN}Paru detected. Checking health...${RESET}"
+
+    if ! paru --version &>/dev/null; then
+        echo -e "${BLUE}Paru is broken. Reinstalling...${RESET}"
+
+        sudo pacman -Rns --noconfirm paru 2>/dev/null || true
+
+        tmpdir=$(mktemp -d)
+
+        git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
+        cd "$tmpdir/paru"
+
+        makepkg -si --noconfirm
+
+        cd "$RICE_DIR"
+
+        echo -e "${GREEN}Paru reinstalled successfully.${RESET}"
+    fi
+
 else
     echo -e "${BLUE}Paru not found. Installing paru...${RESET}"
+
     if [[ -f "$PARU_INST" ]]; then
         chmod +x "$PARU_INST"
         "$PARU_INST"
+
         export PATH="$HOME/.local/bin:/usr/bin:$PATH"
+
     else
-        echo "paru-inst not found. Install paru manually (https://github.com/Morganamilo/paru) then re-run."
-        exit 1
+        echo "paru-inst not found. Installing manually..."
+
+        tmpdir=$(mktemp -d)
+
+        git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
+        cd "$tmpdir/paru"
+
+        makepkg -si --noconfirm
+
+        cd "$RICE_DIR"
     fi
+
     echo -e "${GREEN}Paru installation complete.${RESET}"
 fi
 
@@ -81,6 +111,20 @@ AUR_PACKAGES=(
     anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin
     wlogout jmtpfs-git
 )
+
+# --- Fix broken paru automatically ---
+# if ! paru --version &>/dev/null; then
+#     echo "Paru broken. Reinstalling..."
+
+#     tmpdir=$(mktemp -d)
+
+#     git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
+#     cd "$tmpdir/paru"
+
+#     makepkg -si --noconfirm
+
+#     cd "$RICE_DIR"
+# fi
 
 echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
 paru -S --needed --noconfirm "${AUR_PACKAGES[@]}"
