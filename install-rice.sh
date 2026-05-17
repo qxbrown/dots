@@ -35,19 +35,19 @@ install_paru() {
     rm -rf "$TMPDIR"
 }
 
-if command -v paru &>/dev/null; then
-    echo -e "${GREEN}Paru detected. Checking health...${RESET}"
+echo -e "${GREEN}Checking paru...${RESET}"
 
-    if ! paru --version &>/dev/null; then
-        echo -e "${BLUE}Paru is broken. Reinstalling...${RESET}"
+if paru --version &>/dev/null; then
 
-        sudo pacman -Rns --noconfirm paru paru-bin 2>/dev/null || true
-
-        install_paru
-    fi
+    echo -e "${GREEN}Paru is working.${RESET}"
 
 else
-    echo -e "${BLUE}Paru not found. Installing paru...${RESET}"
+
+    echo -e "${BLUE}Paru missing or broken. Reinstalling...${RESET}"
+
+    sudo pacman -Rns --noconfirm paru-bin 2>/dev/null || true
+
+    rm -f "$(which paru 2>/dev/null)" 2>/dev/null || true
 
     install_paru
 fi
