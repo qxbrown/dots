@@ -5,7 +5,7 @@ Clone this repo and run **`./install-rice.sh`** — it does the full install aut
 ## Quick apply (one script, does everything)
 
 ```bash
-git clone https://github.com/YOUR_USER/dots.git
+git clone https://github.com/qxbrown/dots.git
 cd dots
 chmod +x install-rice.sh
 ./install-rice.sh
