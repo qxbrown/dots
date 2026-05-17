@@ -17,7 +17,6 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
-
 # --- Paru ---
 install_paru() {
     sudo pacman -S --needed --noconfirm base-devel git
@@ -47,7 +46,7 @@ else
 
     sudo pacman -Rns --noconfirm paru-bin 2>/dev/null || true
 
-    rm -f "$(which paru 2>/dev/null)" 2>/dev/null || true
+    sudo rm -f /usr/bin/paru 2>/dev/null || true
 
     install_paru
 fi
