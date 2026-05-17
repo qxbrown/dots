@@ -97,9 +97,7 @@ sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
 # --- AUR packages ---
 AUR_PACKAGES=(
-    visual-studio-code-bin spotify brave-bin mpd-mpris-bin nwg-look zoxide tldr newsboat xclip urlview bat yt-dlp
-    anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin
-    wlogout jmtpfs-git
+    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip bat anyrun-git anyrun-provider-symbols-git wlogout
 )
 
 echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"

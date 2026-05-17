@@ -1,23 +1,29 @@
-/* Rice wofi — same palette as waybar/style.css (see config/_theme/theme.conf) */
+@import "/home/papa/.cache/wal/colors-waybar.css";
 
 * {
-  font-family: "JetBrainsMono Nerd Font";
+  font-family: "JetBrainsMono Nerd Font ";
 }
 
 window {
-  margin: 5px;
+  margin:5px;
+  /* Dynamic background color */
+  /* Rounded corners */
   backdrop-filter: blur(10px);
-  border: none;
-  font-family: JetBrains Mono;
+  /* Blur effect for a frosted glass look */
+  border:none;
+  /* Dynamic foreground color for soft border */
+  font-family: JetBrains Mono
 }
 
 #input {
   all: unset;
   min-height: 40px;
   border: none;
-  color: #9ece6a;
+  color: @color2;
+  /* Dynamic foreground color for input text */
   font-size: 16px;
-  background-color: rgba(28, 31, 61, 0.8);
+  background-color: rgba(255, 255, 255, 0.2);
+  /* Semi-transparent background for input field */
   outline: none;
 }
 
@@ -42,8 +48,10 @@ window {
 }
 
 #text:selected {
-  color: #aa80ff;
+  color: @foreground;
+  /* Dynamic foreground color for selected text */
   background-color: rgba(0, 0, 0, 0.1);
+  /* Light background for selected items */
 }
 
 #entry {
@@ -51,10 +59,12 @@ window {
   border: none;
   background-color: transparent;
   font-size: 14px;
+  /* Dynamic foreground color for entries */
 }
 
 #entry:selected {
   margin: 0px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
+  /* Subtle highlight for selected entries */
 }

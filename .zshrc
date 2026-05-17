@@ -45,7 +45,7 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#555555'
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # syntax highlighting
-source ~/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 typeset -A ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[command]='fg=cyan,bold'
 ZSH_HIGHLIGHT_STYLES[alias]='fg=cyan,bold'
@@ -69,9 +69,9 @@ alias ..='cd ..'
 alias ...='cd ../..'
 
 # ── Aliases — files ──────────────────────────────────────────────────
-alias ls='exa --color=always --group-directories-first'
-alias la='exa -a --color=always --group-directories-first'
-alias ll='exa -l --color=always --group-directories-first'
+alias ls='eza --color=always --group-directories-first'
+alias la='eza -a --color=always --group-directories-first'
+alias ll='eza -l --color=always --group-directories-first'
 alias cat='bat --style=plain'
 alias mv='mv -i'
 alias cp='cp -i'
