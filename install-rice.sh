@@ -41,17 +41,22 @@ sudo sed -i 's/^#ParallelDownloads = 5$/ParallelDownloads = 15\nILoveCandy/' /et
 
 # --- Pacman packages (all from official repos) ---
 PACMAN_PACKAGES=(
-    npm zsh pipewire pipewire-alsa pipewire-audio pipewire-jack wireplumber
-    ttf-jetbrains-mono-nerd noto-fonts-emoji noto-fonts-cjk ttf-font-awesome-6 polkit-gnome mpv imv ffmpeg
-    hyprland dunst wofi swaybg grim slurp kitty pamixer brightnessctl waybar xdg-desktop-portal-hyprland
-    cliphist clang bluez bluez-utils pulseaudio-bluetooth gvfs-mtp btop qbittorrent thunar tumbler unzip
-    file-roller android-tools xdg-user-dirs ranger python-pillow firewalld neovim eza ripgrep perl-image-exiftool
-    duf fzf wl-clipboard wlsunset hyprlock hypridle
-    alacritty networkmanager blueman nm-connection-editor fuse2
-    pamixer pavucontrol mpd ncmpcpp acpi
-    discord firefox tmux git nodejs python go htop
-    terraform docker docker-compose docker-buildx docker-machine
-    kubectl kubeadm kubelet minikube ansible aws-cli
+    npm zsh git nodejs python go htop
+    pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse wireplumber
+    pavucontrol pamixer mpd ncmpcpp acpi
+    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-font-awesome
+    hyprland xdg-desktop-portal-hyprland waybar dunst wofi swaybg grim slurp
+    wl-clipboard cliphist hyprlock hypridle wlsunset brightnessctl
+    kitty alacritty thunar tumbler ranger file-roller unzip
+    eza fzf ripgrep duf bat
+    mpv imv ffmpeg yt-dlp
+    networkmanager bluez bluez-utils blueman nm-connection-editor
+    polkit-gnome xdg-user-dirs gvfs-mtp android-tools fuse2
+    qbittorrent firewalld neovim btop clang python-pillow perl-image-exiftool
+    firefox discord tmux
+    docker docker-compose docker-buildx
+    terraform ansible aws-cli
+    kubectl kubeadm kubelet minikube
     zsh-autosuggestions zsh-syntax-highlighting
 )
 
