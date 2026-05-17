@@ -57,7 +57,10 @@ echo -e "${GREEN}Paru ready.${RESET}"
 
 # --- Pacman.conf ---
 echo -e "\n${BLUE}Tweaking pacman (ParallelDownloads, ILoveCandy)...${RESET}"
-sudo sed -i 's/^#ParallelDownloads = 5$/ParallelDownloads = 15\nILoveCandy/' /etc/pacman.conf 2>/dev/null || true
+
+sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
+
+grep -q "^ILoveCandy" /etc/pacman.conf || echo "ILoveCandy" | sudo tee -a /etc/pacman.conf >/dev/null
 
 # --- Pacman packages (all from official repos) ---
 PACMAN_PACKAGES=(
@@ -75,8 +78,7 @@ PACMAN_PACKAGES=(
     qbittorrent firewalld neovim btop clang python-pillow perl-image-exiftool
     firefox discord tmux
     docker docker-compose docker-buildx
-    terraform ansible aws-cli
-    kubectl kubeadm kubelet minikube
+    terraform ansible
     zsh-autosuggestions zsh-syntax-highlighting
 )
 
@@ -95,9 +97,11 @@ done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
+xdg-user-dirs-update
+
 # --- AUR packages ---
 AUR_PACKAGES=( 
-    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip urlview bat
+    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip 
      anyrun-git anyrun-provider-git wlogout 
 )
 
@@ -122,11 +126,7 @@ if [[ -d "$RICE_DIR/tmux" ]]; then
 
     # tmux helper folder
     mkdir -p "$HOME/tmux"
-
-    cp -rf "$RICE_DIR/tmux/." "$HOME/tmux/"
-
-    # remove duplicate .tmux.conf from ~/tmux
-    rm -f "$HOME/tmux/.tmux.conf"
+    rsync -a --exclude='.tmux.conf' "$RICE_DIR/tmux/" "$HOME/tmux/"
 
     chmod +x "$HOME/tmux"/*.sh 2>/dev/null || true
 
