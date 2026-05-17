@@ -46,8 +46,8 @@ PACMAN_PACKAGES=(
     hyprland dunst wofi swaybg grim slurp kitty pamixer brightnessctl waybar xdg-desktop-portal-hyprland
     cliphist clang bluez bluez-utils pulseaudio-bluetooth gvfs-mtp btop qbittorrent thunar tumbler unzip
     file-roller android-tools xdg-user-dirs ranger python-pillow firewalld neovim eza ripgrep perl-image-exiftool
-    duf fzf wl-clipboard wlogout wlsunset hyprlock hypridle
-    alacritty networkmanager bluetooth blueman nm-connection-editor jmtpfs fuse2
+    duf fzf wl-clipboard wlsunset hyprlock hypridle
+    alacritty networkmanager blueman nm-connection-editor fuse2
     pamixer pavucontrol mpd ncmpcpp acpi
     discord firefox tmux git nodejs python go htop
     terraform docker docker-compose docker-buildx docker-machine
@@ -56,12 +56,25 @@ PACMAN_PACKAGES=(
 )
 
 echo -e "\n${GREEN}Installing system packages via pacman...${RESET}"
-sudo pacman -S --needed --noconfirm "${PACMAN_PACKAGES[@]}"
+# sudo pacman -S --needed --noconfirm "${PACMAN_PACKAGES[@]}"
+
+VALID_PKGS=()
+
+for pkg in "${PACMAN_PACKAGES[@]}"; do
+    if pacman -Si "$pkg" &>/dev/null; then
+        VALID_PKGS+=("$pkg")
+    else
+        echo "Skipping missing package: $pkg"
+    fi
+done
+
+sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
 # --- AUR packages ---
 AUR_PACKAGES=(
     visual-studio-code-bin spotify brave-bin mpd-mpris-bin nwg-look zoxide tldr newsboat xclip urlview bat yt-dlp
     anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin
+    wlogout jmtpfs-git
 )
 
 echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
