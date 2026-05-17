@@ -10,7 +10,6 @@ RESET='\e[0m'
 
 RICE_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
-PARU_INST="$RICE_DIR/paru-inst"
 
 if [[ $EUID -eq 0 ]]; then
    echo "Error: Don't run as root. Run as your user."
@@ -20,50 +19,42 @@ fi
 echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
 
 # --- Paru ---
+install_paru() {
+    sudo pacman -S --needed --noconfirm base-devel git
+
+    TMPDIR=$(mktemp -d)
+
+    git clone https://aur.archlinux.org/paru-bin.git "$TMPDIR/paru-bin"
+
+    cd "$TMPDIR/paru-bin"
+
+    makepkg -si --noconfirm
+
+    cd "$RICE_DIR"
+
+    rm -rf "$TMPDIR"
+}
+
 if command -v paru &>/dev/null; then
     echo -e "${GREEN}Paru detected. Checking health...${RESET}"
 
     if ! paru --version &>/dev/null; then
         echo -e "${BLUE}Paru is broken. Reinstalling...${RESET}"
 
-        sudo pacman -Rns --noconfirm paru 2>/dev/null || true
+        sudo pacman -Rns --noconfirm paru paru-bin 2>/dev/null || true
 
-        tmpdir=$(mktemp -d)
-
-        git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
-        cd "$tmpdir/paru"
-
-        makepkg -si --noconfirm
-
-        cd "$RICE_DIR"
-
-        echo -e "${GREEN}Paru reinstalled successfully.${RESET}"
+        install_paru
     fi
 
 else
     echo -e "${BLUE}Paru not found. Installing paru...${RESET}"
 
-    if [[ -f "$PARU_INST" ]]; then
-        chmod +x "$PARU_INST"
-        "$PARU_INST"
-
-        export PATH="$HOME/.local/bin:/usr/bin:$PATH"
-
-    else
-        echo "paru-inst not found. Installing manually..."
-
-        tmpdir=$(mktemp -d)
-
-        git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
-        cd "$tmpdir/paru"
-
-        makepkg -si --noconfirm
-
-        cd "$RICE_DIR"
-    fi
-
-    echo -e "${GREEN}Paru installation complete.${RESET}"
+    install_paru
 fi
+
+export PATH="$HOME/.local/bin:/usr/bin:$PATH"
+
+echo -e "${GREEN}Paru ready.${RESET}"
 
 # --- Pacman.conf ---
 echo -e "\n${BLUE}Tweaking pacman (ParallelDownloads, ILoveCandy)...${RESET}"
@@ -112,31 +103,37 @@ AUR_PACKAGES=(
     wlogout jmtpfs-git
 )
 
-# --- Fix broken paru automatically ---
-# if ! paru --version &>/dev/null; then
-#     echo "Paru broken. Reinstalling..."
-
-#     tmpdir=$(mktemp -d)
-
-#     git clone https://aur.archlinux.org/paru.git "$tmpdir/paru"
-#     cd "$tmpdir/paru"
-
-#     makepkg -si --noconfirm
-
-#     cd "$RICE_DIR"
-# fi
-
 echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
 paru -S --needed --noconfirm "${AUR_PACKAGES[@]}"
 
 # --- Copy config ---
 echo -e "\n${GREEN}Copying configuration files...${RESET}"
-mkdir -p "$CONFIG" "$HOME/tmux"
+mkdir -p "$CONFIG"
 cp -rf "$RICE_DIR/.config/." "$CONFIG/"
 
 # --- Optional: .zshrc and tmux ---
 [[ -f "$RICE_DIR/.zshrc" ]] && cp "$RICE_DIR/.zshrc" "$HOME/" && echo "Copied .zshrc"
-[[ -f "$RICE_DIR/.tmux.conf" ]] && cp "$RICE_DIR/.tmux.conf" "$HOME/" && echo "Copied .tmux.conf"
+
+# --- Tmux ---
+if [[ -d "$RICE_DIR/tmux" ]]; then
+
+    # main tmux config
+    [[ -f "$RICE_DIR/tmux/.tmux.conf" ]] && \
+        cp "$RICE_DIR/tmux/.tmux.conf" "$HOME/" && \
+        echo "Copied .tmux.conf"
+
+    # tmux helper folder
+    mkdir -p "$HOME/tmux"
+
+    cp -rf "$RICE_DIR/tmux/." "$HOME/tmux/"
+
+    # remove duplicate .tmux.conf from ~/tmux
+    rm -f "$HOME/tmux/.tmux.conf"
+
+    chmod +x "$HOME/tmux"/*.sh 2>/dev/null || true
+
+    echo "Copied tmux folder"
+fi
 
 # --- Scripts to /usr/local/bin ---
 echo -e "\n${BLUE}Copying scripts to /usr/local/bin...${RESET}"
@@ -181,7 +178,7 @@ echo ""
 echo "Start Hyprland from your display manager or run: Hyprland"
 echo ""
 
-read -k 1 "HYP?Start Hyprland now? (y/n): "
+read -n 1 -p "Start Hyprland now? (y/n): " HYP
 echo
 if [[ "$HYP" == "Y" || "$HYP" == "y" ]]; then
     exec Hyprland
