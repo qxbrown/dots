@@ -41,8 +41,8 @@ sudo sed -i 's/^#ParallelDownloads = 5$/ParallelDownloads = 15\nILoveCandy/' /et
 
 # --- Pacman packages (all from official repos) ---
 PACMAN_PACKAGES=(
-    npm zsh pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-media-session
-    ttf-jetbrains-mono-nerd noto-fonts-emoji noto-fonts-cjk ttf-font-awesome polkit-gnome mpv imv ffmpeg
+    npm zsh pipewire pipewire-alsa pipewire-audio pipewire-jack wireplumber
+    ttf-jetbrains-mono-nerd noto-fonts-emoji noto-fonts-cjk ttf-font-awesome-6 polkit-gnome mpv imv ffmpeg
     hyprland dunst wofi swaybg grim slurp kitty pamixer brightnessctl waybar xdg-desktop-portal-hyprland
     cliphist clang bluez bluez-utils pulseaudio-bluetooth gvfs-mtp btop qbittorrent thunar tumbler unzip
     file-roller android-tools xdg-user-dirs ranger python-pillow firewalld neovim eza ripgrep perl-image-exiftool
