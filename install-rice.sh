@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # Full rice install: paru + pacman + AUR + config + scripts. Run from repo root.
 # Usage: ./install-rice.sh  (does everything automatically)
 
@@ -70,14 +70,11 @@ paru -S --needed --noconfirm "${AUR_PACKAGES[@]}"
 # --- Copy config ---
 echo -e "\n${GREEN}Copying configuration files...${RESET}"
 mkdir -p "$CONFIG" "$HOME/tmux"
-cp -r "$RICE_DIR/config"/* "$CONFIG"
+cp -rf "$RICE_DIR/.config/." "$CONFIG/"
 
 # --- Optional: .zshrc and tmux ---
 [[ -f "$RICE_DIR/.zshrc" ]] && cp "$RICE_DIR/.zshrc" "$HOME/" && echo "Copied .zshrc"
-[[ -f "$RICE_DIR/tmux/.tmux.conf" ]] && cp "$RICE_DIR/tmux/.tmux.conf" "$HOME/"
-for f in .tmux-cht-command .tmux-cht-languages fsb.sh fshow.sh; do
-    [[ -f "$RICE_DIR/tmux/$f" ]] && cp "$RICE_DIR/tmux/$f" "$HOME/tmux/" 2>/dev/null || true
-done
+[[ -f "$RICE_DIR/.tmux.conf" ]] && cp "$RICE_DIR/.tmux.conf" "$HOME/" && echo "Copied .tmux.conf"
 
 # --- Scripts to /usr/local/bin ---
 echo -e "\n${BLUE}Copying scripts to /usr/local/bin...${RESET}"
@@ -87,14 +84,15 @@ sudo mkdir -p /usr/local/bin
 
 # --- Chmod scripts in config ---
 echo "Making scripts executable..."
-for f in "$CONFIG/hypr/scripts"/*; do
-    [[ -f "$f" ]] && chmod +x "$f"
-done
-for f in "$CONFIG/waybar/scripts"/*.sh; do
-    [[ -f "$f" ]] && chmod +x "$f"
-done
+
+if [[ -d "$CONFIG/hypr/scripts" ]]; then
+    chmod +x "$CONFIG/hypr/scripts"/* 2>/dev/null || true
+fi
+
+if [[ -d "$CONFIG/waybar/scripts" ]]; then
+    chmod +x "$CONFIG/waybar/scripts"/*.sh 2>/dev/null || true
+fi
 chmod +x "$CONFIG/hypr/scripts"/{linkhandler,lookup.sh,tmuxsession,tmuxcht.sh} 2>/dev/null || true
-chmod +x "$HOME/tmux"/{fsb.sh,fshow.sh} 2>/dev/null || true
 
 # --- Directories ---
 mkdir -p "$CONFIG/hypr/img" "$HOME/Pictures/Screenshot" "$HOME/startpage"
