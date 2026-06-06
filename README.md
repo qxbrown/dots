@@ -26,3 +26,10 @@ nvim .
 ```
 
 After that Install and Update Neovim
+
+
+booting:
+- iwctl {connect to the internet}
+- pacman -Sy archinstall archlinux-keyring
+- archinstall
+- estuid/minimal/
