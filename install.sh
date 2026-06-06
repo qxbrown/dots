@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Full rice install: paru + pacman + AUR + config + scripts. Run from repo root.
-# Usage: ./install-rice.sh  (does everything automatically)
+# Rice install: pacman packages + config + scripts (no AUR/paru).
+# Usage: ./install-rice-no-paru.sh
 
 set -e
 
@@ -16,62 +16,7 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
-
-# --- Paru ---
-
-# FIX 1: Export PATH early so ~/.local/bin paru is found before the version check
-export PATH="$HOME/.local/bin:/usr/bin:$PATH"
-
-install_paru() {
-    sudo pacman -S --needed --noconfirm base-devel git
-
-    local TMPDIR
-    TMPDIR=$(mktemp -d)
-
-    # FIX 2: Trap to clean up tmpdir even on failure
-    trap 'rm -rf "$TMPDIR"' EXIT
-
-    git clone https://aur.archlinux.org/paru-bin.git "$TMPDIR/paru-bin"
-
-    # FIX 3: Use pushd/popd instead of bare cd so we always return to RICE_DIR
-    pushd "$TMPDIR/paru-bin" > /dev/null
-
-    # makepkg must NOT be run as root; already guarded above
-    makepkg -si --noconfirm
-
-    popd > /dev/null
-
-    trap - EXIT
-    rm -rf "$TMPDIR"
-}
-
-echo -e "${GREEN}Checking paru...${RESET}"
-
-if paru --version &>/dev/null; then
-    echo -e "${GREEN}Paru is working.${RESET}"
-else
-    echo -e "${BLUE}Paru missing or broken. Reinstalling...${RESET}"
-
-    # FIX 4: Only attempt removal if it is actually installed as a package;
-    #         avoids a pacman error that would kill the script under set -e
-    if pacman -Qi paru-bin &>/dev/null 2>&1; then
-        sudo pacman -Rns --noconfirm paru-bin
-    fi
-
-    # Remove stale binary regardless
-    sudo rm -f /usr/bin/paru 2>/dev/null || true
-
-    install_paru
-fi
-
-# Verify paru is actually usable before continuing
-if ! paru --version &>/dev/null; then
-    echo "Error: paru installation failed. Aborting."
-    exit 1
-fi
-
-echo -e "${GREEN}Paru ready.${RESET}"
+echo -e "\n${GREEN}=== Rice — pacman-only install ===${RESET}\n"
 
 # --- Pacman.conf ---
 echo -e "\n${BLUE}Tweaking pacman (ParallelDownloads, ILoveCandy)...${RESET}"
@@ -80,7 +25,7 @@ sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.con
 
 grep -q "^ILoveCandy" /etc/pacman.conf || echo "ILoveCandy" | sudo tee -a /etc/pacman.conf >/dev/null
 
-# --- Pacman packages (all from official repos) ---
+# --- Pacman packages (official repos only) ---
 PACMAN_PACKAGES=(
     npm zsh git nodejs python go htop
     pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse wireplumber
@@ -114,15 +59,6 @@ done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
-# --- AUR packages ---
-AUR_PACKAGES=(
-    visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip urlview
-    anyrun-git anyrun-provider-git wlogout
-)
-
-echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
-paru -S --needed --noconfirm "${AUR_PACKAGES[@]}"
-
 # --- Copy config ---
 echo -e "\n${GREEN}Copying configuration files...${RESET}"
 mkdir -p "$CONFIG"
@@ -141,11 +77,8 @@ if [[ -d "$RICE_DIR/tmux" ]]; then
     mkdir -p "$HOME/tmux"
     cp -rf "$RICE_DIR/tmux/." "$HOME/tmux/"
 
-    # Remove duplicate .tmux.conf from ~/tmux/
     rm -f "$HOME/tmux/.tmux.conf"
 
-    # FIX 5: Only chmod if .sh files actually exist; avoids a globbing error
-    #         under set -e when the directory has no .sh files
     shopt -s nullglob
     tmux_scripts=("$HOME/tmux/"*.sh)
     shopt -u nullglob
@@ -169,7 +102,6 @@ sudo mkdir -p /usr/local/bin
 # --- Chmod scripts in config ---
 echo "Making scripts executable..."
 
-# FIX 6: Use nullglob for both script dirs to avoid errors when dirs are empty
 shopt -s nullglob
 
 if [[ -d "$CONFIG/hypr/scripts" ]]; then
@@ -184,16 +116,11 @@ fi
 
 shopt -u nullglob
 
-# FIX 7: Removed the duplicate chmod of named scripts — they were already
-#         covered by the glob above and the redundant call caused set -e exits
-#         if any of those specific files didn't exist.
-
 # --- Directories ---
 xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshot"
 
 # --- Default shell to zsh ---
-# FIX 8: Replace zsh-specific `whence` with bash-compatible `command -v`
 ZSH_PATH="$(command -v zsh)"
 
 if [[ -z "$ZSH_PATH" ]]; then
@@ -209,7 +136,9 @@ fi
 
 echo ""
 echo -e "${GREEN}=========================================="
-echo "  Install complete!"
+echo "  Install complete! (pacman packages only)"
+echo "  AUR packages were skipped."
+echo "  Run install-rice-paru-only.sh to install them."
 echo "==========================================${RESET}"
 echo ""
 echo "Start Hyprland from your display manager or run: Hyprland"
