@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Rice install: pacman packages + config + scripts (no AUR/paru).
-# Usage: ./install-rice-no-paru.sh
 
 set -e
 
@@ -59,13 +57,40 @@ done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
+# --- Zsh plugins: copy pacman-installed files into ~/.zsh/ ---
+# .zshrc sources plugins from ~/.zsh/, but pacman installs them to /usr/share/.
+# This step bridges that gap so the source lines in .zshrc never fail.
+echo -e "\n${GREEN}Setting up zsh plugins in ~/.zsh/...${RESET}"
+
+mkdir -p "$HOME/.zsh/zsh-autosuggestions"
+mkdir -p "$HOME/.zsh/zsh-syntax-highlighting"
+
+if [[ -d /usr/share/zsh/plugins/zsh-autosuggestions ]]; then
+    cp -rf /usr/share/zsh/plugins/zsh-autosuggestions/. "$HOME/.zsh/zsh-autosuggestions/"
+    echo "Copied zsh-autosuggestions"
+else
+    echo "Warning: zsh-autosuggestions not found in /usr/share — skipping"
+fi
+
+if [[ -d /usr/share/zsh/plugins/zsh-syntax-highlighting ]]; then
+    cp -rf /usr/share/zsh/plugins/zsh-syntax-highlighting/. "$HOME/.zsh/zsh-syntax-highlighting/"
+    echo "Copied zsh-syntax-highlighting"
+else
+    echo "Warning: zsh-syntax-highlighting not found in /usr/share — skipping"
+fi
+
 # --- Copy config ---
 echo -e "\n${GREEN}Copying configuration files...${RESET}"
 mkdir -p "$CONFIG"
 cp -rf "$RICE_DIR/.config/." "$CONFIG/"
 
-# --- Optional: .zshrc ---
-[[ -f "$RICE_DIR/.zshrc" ]] && cp "$RICE_DIR/.zshrc" "$HOME/" && echo "Copied .zshrc"
+# --- .zshrc ---
+if [[ -f "$RICE_DIR/.zshrc" ]]; then
+    cp "$RICE_DIR/.zshrc" "$HOME/"
+    echo "Copied .zshrc"
+else
+    echo "Warning: .zshrc not found in repo root — skipping"
+fi
 
 # --- Tmux ---
 if [[ -d "$RICE_DIR/tmux" ]]; then
