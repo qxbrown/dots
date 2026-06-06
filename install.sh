@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Full rice install — one script to rule them all.
+# Usage: ./install.sh   (run from repo root, never as root)
 
 set -e
 
@@ -9,21 +11,25 @@ RESET='\e[0m'
 RICE_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}"
 
+# --- Root guard ---
 if [[ $EUID -eq 0 ]]; then
     echo "Error: Don't run as root. Run as your user."
     exit 1
 fi
 
-echo -e "\n${GREEN}=== Rice — pacman-only install ===${RESET}\n"
+echo -e "\n${GREEN}=== Rice — full install ===${RESET}\n"
 
-# --- Pacman.conf ---
-echo -e "\n${BLUE}Tweaking pacman (ParallelDownloads, ILoveCandy)...${RESET}"
+# ─────────────────────────────────────────────
+# STEP 1 — pacman.conf tweaks
+# ─────────────────────────────────────────────
+echo -e "${BLUE}Tweaking pacman (ParallelDownloads, ILoveCandy)...${RESET}"
 
 sudo sed -i 's/^#\s*ParallelDownloads.*/ParallelDownloads = 15/' /etc/pacman.conf
-
 grep -q "^ILoveCandy" /etc/pacman.conf || echo "ILoveCandy" | sudo tee -a /etc/pacman.conf >/dev/null
 
-# --- Pacman packages (official repos only) ---
+# ─────────────────────────────────────────────
+# STEP 2 — pacman packages (official repos)
+# ─────────────────────────────────────────────
 PACMAN_PACKAGES=(
     npm zsh git nodejs python go htop
     pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse wireplumber
@@ -32,7 +38,7 @@ PACMAN_PACKAGES=(
     hyprland xdg-desktop-portal-hyprland waybar dunst wofi swaybg grim slurp
     wl-clipboard cliphist hyprlock hypridle wlsunset brightnessctl
     kitty alacritty thunar tumbler ranger file-roller unzip
-    eza fzf ripgrep duf bat zoxide
+    eza fzf ripgrep duf bat
     mpv imv ffmpeg yt-dlp
     networkmanager bluez bluez-utils blueman nm-connection-editor
     polkit-gnome xdg-user-dirs gvfs-mtp android-tools fuse2
@@ -43,20 +49,24 @@ PACMAN_PACKAGES=(
     zsh-autosuggestions zsh-syntax-highlighting
 )
 
-echo -e "\n${GREEN}Installing system packages via pacman...${RESET}"
+echo -e "\n${GREEN}Installing pacman packages...${RESET}"
 
 VALID_PKGS=()
-
 for pkg in "${PACMAN_PACKAGES[@]}"; do
     if pacman -Si "$pkg" &>/dev/null; then
         VALID_PKGS+=("$pkg")
     else
-        echo "Skipping missing package: $pkg"
+        echo "  Skipping unknown package: $pkg"
     fi
 done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
+# ─────────────────────────────────────────────
+# STEP 3 — zsh plugins into ~/.zsh/
+# .zshrc sources from ~/.zsh/ but pacman puts
+# them in /usr/share/ — bridge that gap here.
+# ─────────────────────────────────────────────
 echo -e "\n${GREEN}Setting up zsh plugins in ~/.zsh/...${RESET}"
 
 mkdir -p "$HOME/.zsh/zsh-autosuggestions"
@@ -64,41 +74,45 @@ mkdir -p "$HOME/.zsh/zsh-syntax-highlighting"
 
 if [[ -d /usr/share/zsh/plugins/zsh-autosuggestions ]]; then
     cp -rf /usr/share/zsh/plugins/zsh-autosuggestions/. "$HOME/.zsh/zsh-autosuggestions/"
-    echo "Copied zsh-autosuggestions"
+    echo "  Copied zsh-autosuggestions"
 else
-    echo "Warning: zsh-autosuggestions not found in /usr/share — skipping"
+    echo "  Warning: zsh-autosuggestions not found in /usr/share — skipping"
 fi
 
 if [[ -d /usr/share/zsh/plugins/zsh-syntax-highlighting ]]; then
     cp -rf /usr/share/zsh/plugins/zsh-syntax-highlighting/. "$HOME/.zsh/zsh-syntax-highlighting/"
-    echo "Copied zsh-syntax-highlighting"
+    echo "  Copied zsh-syntax-highlighting"
 else
-    echo "Warning: zsh-syntax-highlighting not found in /usr/share — skipping"
+    echo "  Warning: zsh-syntax-highlighting not found in /usr/share — skipping"
 fi
 
-# --- Copy config ---
+# ─────────────────────────────────────────────
+# STEP 4 — copy configs + .zshrc
+# ─────────────────────────────────────────────
 echo -e "\n${GREEN}Copying configuration files...${RESET}"
+
 mkdir -p "$CONFIG"
 cp -rf "$RICE_DIR/.config/." "$CONFIG/"
 
-# --- .zshrc ---
 if [[ -f "$RICE_DIR/.zshrc" ]]; then
     cp "$RICE_DIR/.zshrc" "$HOME/"
-    echo "Copied .zshrc"
+    echo "  Copied .zshrc"
 else
-    echo "Warning: .zshrc not found in repo root — skipping"
+    echo "  Warning: .zshrc not found in repo root — skipping"
 fi
 
-# --- Tmux ---
+# ─────────────────────────────────────────────
+# STEP 5 — tmux
+# ─────────────────────────────────────────────
 if [[ -d "$RICE_DIR/tmux" ]]; then
+    echo -e "\n${GREEN}Setting up tmux...${RESET}"
 
     [[ -f "$RICE_DIR/tmux/.tmux.conf" ]] && \
         cp "$RICE_DIR/tmux/.tmux.conf" "$HOME/" && \
-        echo "Copied .tmux.conf"
+        echo "  Copied .tmux.conf"
 
     mkdir -p "$HOME/tmux"
     cp -rf "$RICE_DIR/tmux/." "$HOME/tmux/"
-
     rm -f "$HOME/tmux/.tmux.conf"
 
     shopt -s nullglob
@@ -106,22 +120,30 @@ if [[ -d "$RICE_DIR/tmux" ]]; then
     shopt -u nullglob
     [[ ${#tmux_scripts[@]} -gt 0 ]] && chmod +x "${tmux_scripts[@]}"
 
-    echo "Copied tmux folder"
+    echo "  Copied tmux folder"
 fi
 
-# --- Scripts to /usr/local/bin ---
-echo -e "\n${BLUE}Copying scripts to /usr/local/bin...${RESET}"
+# ─────────────────────────────────────────────
+# STEP 6 — scripts to /usr/local/bin + chmod
+# ─────────────────────────────────────────────
+echo -e "\n${BLUE}Installing scripts to /usr/local/bin...${RESET}"
 sudo mkdir -p /usr/local/bin
 
 [[ -f "$CONFIG/hypr/scripts/tmuxsession" ]] && \
     sudo cp "$CONFIG/hypr/scripts/tmuxsession" /usr/local/bin/ && \
-    sudo chmod +x /usr/local/bin/tmuxsession
+    sudo chmod +x /usr/local/bin/tmuxsession && \
+    echo "  Installed tmuxsession"
 
 [[ -f "$CONFIG/hypr/scripts/tmuxcht.sh" ]] && \
     sudo cp "$CONFIG/hypr/scripts/tmuxcht.sh" /usr/local/bin/ && \
-    sudo chmod +x /usr/local/bin/tmuxcht.sh
+    sudo chmod +x /usr/local/bin/tmuxcht.sh && \
+    echo "  Installed tmuxcht.sh"
 
-# --- Chmod scripts in config ---
+[[ -f "$CONFIG/hypr/scripts/linkhandler" ]] && \
+    sudo cp "$CONFIG/hypr/scripts/linkhandler" /usr/local/bin/ && \
+    sudo chmod +x /usr/local/bin/linkhandler && \
+    echo "  Installed linkhandler"
+
 echo "Making scripts executable..."
 
 shopt -s nullglob
@@ -138,29 +160,91 @@ fi
 
 shopt -u nullglob
 
-# --- Directories ---
+# ─────────────────────────────────────────────
+# STEP 7 — user directories
+# ─────────────────────────────────────────────
 xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshot"
 
-# --- Default shell to zsh ---
+# ─────────────────────────────────────────────
+# STEP 8 — default shell to zsh
+# chsh takes effect on next login, not now.
+# ─────────────────────────────────────────────
+echo -e "\n${GREEN}Setting default shell to zsh...${RESET}"
+
 ZSH_PATH="$(command -v zsh)"
 
 if [[ -z "$ZSH_PATH" ]]; then
-    echo -e "${BLUE}zsh not found in PATH — skipping shell change.${RESET}"
+    echo -e "${BLUE}  zsh not found in PATH — skipping shell change.${RESET}"
 else
     if ! grep -qF "$ZSH_PATH" /etc/shells; then
         echo "$ZSH_PATH" | sudo tee -a /etc/shells
     fi
-
-    echo -e "${GREEN}Setting default shell to zsh...${RESET}"
-    chsh -s "$ZSH_PATH" || echo -e "${BLUE}Could not change shell. Run: chsh -s \$(which zsh)${RESET}"
+    chsh -s "$ZSH_PATH" || echo -e "${BLUE}  Could not change shell. Run manually: chsh -s \$(which zsh)${RESET}"
+    echo "  Default shell set to $ZSH_PATH (takes effect on next login)"
 fi
 
+# ─────────────────────────────────────────────
+# STEP 9 — paru install (needs base-devel+git
+#           from step 2, zsh registered in step 8)
+# ─────────────────────────────────────────────
+echo -e "\n${BLUE}Checking for paru...${RESET}"
+
+export PATH="$HOME/.local/bin:/usr/bin:$PATH"
+
+ISAUR="/sbin/paru"
+PARU_INST="$RICE_DIR/paru-inst.sh"
+
+if [[ -f "$ISAUR" ]]; then
+    echo -e "${GREEN}  Paru was located, moving on...${RESET}"
+else
+    echo "  Paru not found. Installing..."
+    if [[ -f "$PARU_INST" ]]; then
+        chmod +x "$PARU_INST"
+        bash "$PARU_INST"
+    else
+        echo -e "${BLUE}  Warning: paru-inst.sh not found at $PARU_INST"
+        echo -e "  Skipping paru. Place paru-inst.sh in repo root and re-run.${RESET}"
+    fi
+fi
+
+# ─────────────────────────────────────────────
+# STEP 10 — AUR packages (needs paru from step 9)
+# ─────────────────────────────────────────────
+if command -v paru &>/dev/null; then
+    AUR_PACKAGES=(
+        visual-studio-code-bin
+        spotify
+        brave-bin
+        nwg-look
+        hyprlock
+        wlogout
+        tldr
+        newsboat
+        urlview
+        anyrun-git
+        anyrun-provider-git
+        banana-cursor-bin
+        clipse-bin
+        mpd-mpris-bin
+    )
+
+    echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
+    paru -S --needed --noconfirm "${AUR_PACKAGES[@]}"
+    echo -e "${GREEN}  AUR packages installed.${RESET}"
+else
+    echo -e "${BLUE}  paru not available — skipping AUR packages.${RESET}"
+    echo "  Install paru manually then run: paru -S visual-studio-code-bin spotify brave-bin nwg-look hyprlock wlogout newsboat urlview anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin mpd-mpris-bin"
+fi
+
+
+# ─────────────────────────────────────────────
+# Done
+# ─────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}=========================================="
-echo "  Install complete! (pacman packages only)"
-echo "  AUR packages were skipped."
-echo "  Run install-rice-paru-only.sh to install them."
+echo "  Install complete!"
+echo "  Log out and back in for zsh to take effect."
 echo "==========================================${RESET}"
 echo ""
 echo "Start Hyprland from your display manager or run: Hyprland"
