@@ -180,19 +180,19 @@ else
 fi
 
 # ─────────────────────────────────────────────
-# STEP 9 — paru install 
+# STEP 9 — paru install
 # ─────────────────────────────────────────────
 echo -e "\n${BLUE}Checking for paru...${RESET}"
 
 export PATH="$HOME/.local/bin:/usr/bin:$PATH"
 
-ISAUR="/sbin/paru"
 PARU_INST="$RICE_DIR/paru-inst.sh"
 
-if [[ -f "$ISAUR" ]]; then
-    echo -e "${GREEN}  Paru was located, moving on...${RESET}"
+# Check paru is present AND actually works (catches libalpm version mismatch)
+if command -v paru &>/dev/null && paru --version &>/dev/null 2>&1; then
+    echo -e "${GREEN}  Paru is working, moving on...${RESET}"
 else
-    echo "  Paru not found. Installing..."
+    echo "  Paru missing or broken. Installing from source..."
     if [[ -f "$PARU_INST" ]]; then
         chmod +x "$PARU_INST"
         bash "$PARU_INST"
@@ -205,7 +205,7 @@ fi
 # ─────────────────────────────────────────────
 # STEP 10 — AUR packages (needs paru from step 9)
 # ─────────────────────────────────────────────
-if command -v paru &>/dev/null; then
+if command -v paru &>/dev/null && paru --version &>/dev/null 2>&1; then
     AUR_PACKAGES=(
         visual-studio-code-bin
         spotify
@@ -225,7 +225,7 @@ if command -v paru &>/dev/null; then
     echo -e "${GREEN}  AUR packages installed.${RESET}"
 else
     echo -e "${BLUE}  paru not available — skipping AUR packages.${RESET}"
-    echo "  Install paru manually then run: paru -S visual-studio-code-bin spotify brave-bin nwg-look hyprlock wlogout newsboat urlview anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin mpd-mpris-bin"
+    echo "  Install paru manually then run: paru -S visual-studio-code-bin spotify brave-bin nwg-look zoxide tldr xclip urlview anyrun-git anyrun-provider-git wlogout"
 fi
 
 # ─────────────────────────────────────────────
