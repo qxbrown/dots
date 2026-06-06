@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Full rice install — one script to rule them all.
-# Usage: ./install.sh   (run from repo root, never as root)
 
 set -e
 
@@ -31,10 +29,10 @@ grep -q "^ILoveCandy" /etc/pacman.conf || echo "ILoveCandy" | sudo tee -a /etc/p
 # STEP 2 — pacman packages (official repos)
 # ─────────────────────────────────────────────
 PACMAN_PACKAGES=(
-    npm zsh git nodejs python go htop
+    npm zsh git nodejs python go htop base-devel
     pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse wireplumber
     pavucontrol pamixer mpd ncmpcpp acpi
-    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-cjk noto-fonts-emoji
+    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-font-awesome
     hyprland xdg-desktop-portal-hyprland waybar dunst wofi swaybg grim slurp
     wl-clipboard cliphist hyprlock hypridle wlsunset brightnessctl
     kitty alacritty thunar tumbler ranger file-roller unzip
@@ -64,8 +62,6 @@ sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
 # ─────────────────────────────────────────────
 # STEP 3 — zsh plugins into ~/.zsh/
-# .zshrc sources from ~/.zsh/ but pacman puts
-# them in /usr/share/ — bridge that gap here.
 # ─────────────────────────────────────────────
 echo -e "\n${GREEN}Setting up zsh plugins in ~/.zsh/...${RESET}"
 
@@ -168,7 +164,6 @@ mkdir -p "$HOME/Pictures/Screenshot"
 
 # ─────────────────────────────────────────────
 # STEP 8 — default shell to zsh
-# chsh takes effect on next login, not now.
 # ─────────────────────────────────────────────
 echo -e "\n${GREEN}Setting default shell to zsh...${RESET}"
 
@@ -185,8 +180,7 @@ else
 fi
 
 # ─────────────────────────────────────────────
-# STEP 9 — paru install (needs base-devel+git
-#           from step 2, zsh registered in step 8)
+# STEP 9 — paru install 
 # ─────────────────────────────────────────────
 echo -e "\n${BLUE}Checking for paru...${RESET}"
 
@@ -217,16 +211,13 @@ if command -v paru &>/dev/null; then
         spotify
         brave-bin
         nwg-look
-        hyprlock
-        wlogout
+        zoxide
         tldr
-        newsboat
+        xclip
         urlview
         anyrun-git
         anyrun-provider-git
-        banana-cursor-bin
-        clipse-bin
-        mpd-mpris-bin
+        wlogout
     )
 
     echo -e "\n${BLUE}Installing AUR packages via paru...${RESET}"
@@ -236,7 +227,6 @@ else
     echo -e "${BLUE}  paru not available — skipping AUR packages.${RESET}"
     echo "  Install paru manually then run: paru -S visual-studio-code-bin spotify brave-bin nwg-look hyprlock wlogout newsboat urlview anyrun-git anyrun-provider-git banana-cursor-bin clipse-bin mpd-mpris-bin"
 fi
-
 
 # ─────────────────────────────────────────────
 # Done
