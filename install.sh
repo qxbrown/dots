@@ -32,7 +32,7 @@ PACMAN_PACKAGES=(
     npm zsh git nodejs python go htop base-devel
     pipewire pipewire-alsa pipewire-audio pipewire-jack pipewire-pulse wireplumber
     pavucontrol pamixer mpd ncmpcpp acpi
-    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-font-awesome
+    ttf-jetbrains-mono-nerd noto-fonts noto-fonts-cjk noto-fonts-emoji
     hyprland xdg-desktop-portal-hyprland waybar dunst wofi swaybg grim slurp
     wl-clipboard cliphist hyprlock hypridle wlsunset brightnessctl
     kitty alacritty thunar tumbler ranger file-roller unzip
