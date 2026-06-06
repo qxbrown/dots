@@ -32,7 +32,7 @@ PACMAN_PACKAGES=(
     hyprland xdg-desktop-portal-hyprland waybar dunst wofi swaybg grim slurp
     wl-clipboard cliphist hyprlock hypridle wlsunset brightnessctl
     kitty alacritty thunar tumbler ranger file-roller unzip
-    eza fzf ripgrep duf bat
+    eza fzf ripgrep duf bat zoxide
     mpv imv ffmpeg yt-dlp
     networkmanager bluez bluez-utils blueman nm-connection-editor
     polkit-gnome xdg-user-dirs gvfs-mtp android-tools fuse2
@@ -57,9 +57,6 @@ done
 
 sudo pacman -S --needed --noconfirm "${VALID_PKGS[@]}"
 
-# --- Zsh plugins: copy pacman-installed files into ~/.zsh/ ---
-# .zshrc sources plugins from ~/.zsh/, but pacman installs them to /usr/share/.
-# This step bridges that gap so the source lines in .zshrc never fail.
 echo -e "\n${GREEN}Setting up zsh plugins in ~/.zsh/...${RESET}"
 
 mkdir -p "$HOME/.zsh/zsh-autosuggestions"
